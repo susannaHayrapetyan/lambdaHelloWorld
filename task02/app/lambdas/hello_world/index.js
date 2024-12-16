@@ -4,6 +4,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 200,
             body: {
+                statusCode: 200,
                 message: 'Hello from Lambda',
             },
         };
@@ -12,6 +13,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 400,
             body: {
+                statusCode: 400,
                 message: `Bad request syntax or unsupported method. Request path: ${request.path}. HTTP method: ${request.method}`,
             },
         };
