@@ -2,10 +2,10 @@ const { randomUUID } = require('crypto');
 const { S3Client } = require("@aws-sdk/client-s3");
 const { Upload } = require("@aws-sdk/lib-storage");
 
-exports.handler = async (event, context) => {
+exports.handler = async () => {
     const bucketName = process.env.target_bucket;
     const s3Client = new S3Client({});
-    const fileName = event.time;
+    const fileName = new Date().toISOString();
     const fileContent = JSON.stringify({
         "ids": new Array(10).fill(0).map(() => randomUUID()),
     })
