@@ -21,7 +21,7 @@ exports.handler = async (event, context) => {
             "modificationTime": new Date().toISOString(),
             "newValue": {
                 "key": newData.key.S,
-                "value": newData.value.N
+                "value": +newData.value.N
             },
          } 
     }
@@ -35,7 +35,7 @@ exports.handler = async (event, context) => {
             "modificationTime": new Date().toISOString(),
             "updatedAttribute": "value",
             "oldValue": oldData.value.N,
-            "newValue": newData.value.N
+            "newValue": +newData.value.N
          } 
     }
     await dynamo.put(
