@@ -34,7 +34,7 @@ exports.handler = async (event, context) => {
             "itemKey": newData.key.S,
             "modificationTime": new Date().toISOString(),
             "updatedAttribute": "value",
-            "oldValue": oldData.value.N,
+            "oldValue": +oldData.value.N,
             "newValue": +newData.value.N
          } 
     }
