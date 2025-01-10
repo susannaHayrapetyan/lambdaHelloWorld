@@ -11,9 +11,7 @@ exports.handler = async (event, context, a) => {
     let body;
     let statusCode = 201;
     const tableName = process.env.target_table;
-    
-    console.log(process.env.target_table, JSON.stringify(context), 'EVENTTT2', JSON.stringify(event), a);
-    
+        
     const item = {
         id: context?.awsRequestId,
         createdAt: new Date().toISOString(),
@@ -27,7 +25,6 @@ exports.handler = async (event, context, a) => {
         }
     );
     body = item;
-    console.log('Putitem', JSON.stringify(item));
     
     return {
         statusCode,
