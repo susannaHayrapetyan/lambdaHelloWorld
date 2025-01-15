@@ -60,20 +60,20 @@ exports.handler = async (event, context) => {
     const item = {
         "id": context?.awsRequestId,
         "forecast": {
-            "latitude": forecastResult.latitude,
-            "longitude": forecastResult.longitude,
-            "timezone": forecastResult.timezone,
-            "elevation": forecastResult.elevation,
-            "timezone_abbreviation": forecastResult.timezone_abbreviation,
-            "utc_offset_seconds": forecastResult.utc_offset_seconds,
-            "generationtime_ms": forecastResult.generationtime_ms,
+            "latitude": forecastResult.latitude || 0,
+            "longitude": forecastResult.longitude || 0,
+            "timezone": forecastResult.timezone || '',
+            "elevation": forecastResult.elevation || 0,
+            "timezone_abbreviation": forecastResult.timezone_abbreviation || '',
+            "utc_offset_seconds": forecastResult.utc_offset_seconds || 0,
+            "generationtime_ms": forecastResult.generationtime_ms || 0,
             "hourly": {
-                "time": forecastResult.hourly.time,
-                "temperature_2m": forecastResult.hourly.temperature_2m,
+                "time": forecastResult.hourly.time || [],
+                "temperature_2m": forecastResult.hourly.temperature_2m || [],
             },
             "hourly_units": {
-                "time": forecastResult.hourly_units.time,
-                "temperature_2m": forecastResult.hourly_units.temperature_2m,
+                "time": forecastResult.hourly_units.time || '',
+                "temperature_2m": forecastResult.hourly_units.temperature_2m || '',
             },
         }
     }

@@ -15,7 +15,9 @@
             "ssm:PutParameter",
             "ssm:GetParameter",
             "kms:Decrypt",
-            "lambda:InvokeFunctionUrl"
+            "lambda:InvokeFunctionUrl",
+            "xray:PutTraceSegments",
+            "xray:PutTelemetryRecords"
           ],
           "Effect": "Allow",
           "Resource": "*"
