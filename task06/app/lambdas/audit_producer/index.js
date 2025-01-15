@@ -1,7 +1,7 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
     DynamoDBDocument,
-  PutCommand
+    PutCommand
 } = require("@aws-sdk/lib-dynamodb");
 
 const client = new DynamoDBClient({});
@@ -36,7 +36,7 @@ exports.handler = async (event, context) => {
             "updatedAttribute": "value",
             "oldValue": +oldData.value.N,
             "newValue": +newData.value.N
-         } 
+        }
     }
     await dynamo.put(
         {
