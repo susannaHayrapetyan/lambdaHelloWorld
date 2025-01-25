@@ -32,7 +32,7 @@ async function signup(userPoolId, data) {
         TemporaryPassword: data.password,
     };
     const command = new AdminCreateUserCommand(input);
-    
+
     await cognitoClient.send(command);
 
     // Set permanent password
@@ -113,12 +113,12 @@ async function addTable(tableName, tableData) {
     };
 }
 
-async function addReservation(tableName, tableData) {
+async function addReservation(reservationsTableName, tableName, tableData) {
     // Create DynamoDB item
     const id = randomUUID();
     const item = {
         'id': {'S': id},
-        'tableId': {'N': tableData.tableNumber.toString()},
+        'tableNumber': {'N': tableData.tableNumber.toString()},
         'clientName': {'S': tableData.clientName},
         'phoneNumber': {'S': tableData.phoneNumber},
         'date': {'S': tableData.date},
@@ -126,8 +126,13 @@ async function addReservation(tableName, tableData) {
         'slotTimeStart': {'S': tableData.slotTimeStart},
     };
 
+    const table = await getTable(tableName, tableData.tableNumber)
+    if (!table) {
+        throw new Error('Table not found!');
+    }
+
     const putItemCommand = new PutItemCommand({
-        TableName: tableName,
+        TableName: reservationsTableName,
         Item: item,
     });
     await dynamo.send(putItemCommand);
@@ -148,42 +153,47 @@ exports.handler = async (event, context) => {
     let body = 'Route Not Found';
     
     console.log(process.env, 'EVENT----', event, '[[[', context);
-
-    if (event.resource === '/signup' && event.httpMethod === 'POST') {
-        statusCode = 200;
-        body = await signup(userPoolId, requestBody);
-    }
-    if (event.resource === '/signin' && event.httpMethod === 'POST') {
-        statusCode = 200;
-        body = await signin(userPoolId, userPoolClientId, requestBody);
-    }
-    if (event.resource === '/reservations' && event.httpMethod === 'GET') {
-        statusCode = 200;
-        const reservations = await getTables(reservationsTableName);
-        body = {
-            reservations: reservations.map(({id, ...keepAttrs}) => keepAttrs),
+    try {
+        if (event.resource === '/signup' && event.httpMethod === 'POST') {
+            statusCode = 200;
+            body = await signup(userPoolId, requestBody);
         }
-    }
-    if (event.resource === '/reservations' && event.httpMethod === 'POST') {
-        statusCode = 200;
-        body = await addReservation(reservationsTableName, requestBody);
-    }
-    if (event.resource === '/tables' && event.httpMethod === 'GET') {
-        statusCode = 200;
-        const tables = await getTables(tableName);
-        body = {
-            tables,
+        if (event.resource === '/signin' && event.httpMethod === 'POST') {
+            statusCode = 200;
+            body = await signin(userPoolId, userPoolClientId, requestBody);
         }
-    }
-    if (event.resource === '/tables' && event.httpMethod === 'POST') {
-        statusCode = 200;
-        body = await addTable(tableName, requestBody);
-    }
-    if (event.resource === '/tables/{tableId}' && event.httpMethod === 'GET') {
-        const tableId = event.pathParameters.tableId
+        if (event.resource === '/reservations' && event.httpMethod === 'GET') {
+            statusCode = 200;
+            const reservations = await getTables(reservationsTableName);
+            body = {
+                reservations: reservations.map(({ id, ...keepAttrs }) => keepAttrs),
+            }
+        }
+        if (event.resource === '/reservations' && event.httpMethod === 'POST') {
+            statusCode = 200;
+            body = await addReservation(reservationsTableName, tableName, requestBody);
+        }
+        if (event.resource === '/tables' && event.httpMethod === 'GET') {
+            statusCode = 200;
+            const tables = await getTables(tableName);
+            body = {
+                tables,
+            }
+        }
+        if (event.resource === '/tables' && event.httpMethod === 'POST') {
+            statusCode = 200;
+            body = await addTable(tableName, requestBody);
+        }
+        if (event.resource === '/tables/{tableId}' && event.httpMethod === 'GET') {
+            const tableId = event.pathParameters.tableId
 
-        statusCode = 200;
-        body = await getTable(tableName, tableId);
+            statusCode = 200;
+            body = await getTable(tableName, tableId);
+        }
+    } catch (e) {
+        console.log('ERRORRRR----', e);
+        statusCode = 400;
+        body = `Error: ${e}`;
     }
     
     console.log('RESULT2----', body);
