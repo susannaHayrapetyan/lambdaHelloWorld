@@ -126,25 +126,37 @@ async function addReservation(reservationsTableName, tableName, tableData) {
         'slotTimeStart': {'S': tableData.slotTimeStart},
     };
 
-    const table = await getTable(tableName, tableData.tableNumber)
-    if (!table?.id) {
+    // Check table exists
+    const tableCommand = new ScanCommand({
+        TableName: tableName,
+        FilterExpression: `#number = :tabnum`,
+        ExpressionAttributeNames: {
+            '#number': 'number',
+        },
+        ExpressionAttributeValues: {
+            ":tabnum": parseInt(tableData.tableNumber),
+        }
+    });
+    const tableResult = await dynamo.send(tableCommand);
+    if (!tableResult?.Items?.length) {
         throw new Error('Table not found!');
     }
-    // Check overlap
+
+    // Validate overlap
     const scanCommand = new ScanCommand({
         TableName: reservationsTableName,
-        FilterExpression: `((#end >= :timeEnd and #start <= :timeEnd) OR 
+        FilterExpression: `#table = :tableNum AND ((#end >= :timeEnd and #start <= :timeEnd) OR 
             (#end >= :timeStart and #start <= :timeStart) OR 
             (#start >= :timeStart and #end <= :timeEnd))`,
         ExpressionAttributeNames: {
             '#start': 'slotTimeStart',
             '#end': 'slotTimeEnd',
-            // '#table': 'tableNumber',
+            '#table': 'tableNumber',
         },
         ExpressionAttributeValues: {
             ":timeEnd": tableData.slotTimeEnd,
             ":timeStart": tableData.slotTimeStart,
-            // ":tableNum": tableData.tableNumber.toString(),
+            ":tableNum": parseInt(tableData.tableNumber),
         }
     });
     const scanResult = await dynamo.send(scanCommand);
