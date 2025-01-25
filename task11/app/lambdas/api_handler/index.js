@@ -127,8 +127,29 @@ async function addReservation(reservationsTableName, tableName, tableData) {
     };
 
     const table = await getTable(tableName, tableData.tableNumber)
-    if (!table) {
+    if (!table?.id) {
         throw new Error('Table not found!');
+    }
+    // Check overlap
+    const scanCommand = new ScanCommand({
+        TableName: reservationsTableName,
+        FilterExpression: `((#end >= :timeEnd and #start <= :timeEnd) OR 
+            (#end >= :timeStart and #start <= :timeStart) OR 
+            (#start >= :timeStart and #end <= :timeEnd))`,
+        ExpressionAttributeNames: {
+            '#start': 'slotTimeStart',
+            '#end': 'slotTimeEnd',
+            // '#table': 'tableNumber',
+        },
+        ExpressionAttributeValues: {
+            ":timeEnd": tableData.slotTimeEnd,
+            ":timeStart": tableData.slotTimeStart,
+            // ":tableNum": tableData.tableNumber.toString(),
+        }
+    });
+    const scanResult = await dynamo.send(scanCommand);
+    if (scanResult?.Items?.length) {
+        throw new Error('Overlap exists between reservations!');
     }
 
     const putItemCommand = new PutItemCommand({
