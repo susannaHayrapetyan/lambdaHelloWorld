@@ -95,6 +95,7 @@
       "Version": "2012-10-17",
       "Statement": [
         {
+          "Sid": "PublicReadGetObject",
           "Effect": "Allow",
           "Principal": "*",
           "Action": [
@@ -105,7 +106,7 @@
           ],
           "Condition": {
             "IpAddress": {
-              "aws:SourceIp": "204.153.55.4/32"
+                "aws:SourceIp": "204.153.55.4/32"
             }
           }
         }
@@ -117,7 +118,6 @@
       "block_public_policy": false,
       "restrict_public_buckets": false
     },
-    "tags": {},
     "website_hosting": {
       "enabled": true,
       "index_document": "index.html",
