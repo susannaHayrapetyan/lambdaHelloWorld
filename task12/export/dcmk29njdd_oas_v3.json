@@ -14,9 +14,11 @@
       }
     }
   ],
-    "paths": {
+  "paths": {
     "/reservations": {
       "get": {
+        "summary": "Get Reservations API",
+        "description": "Get All Reservations",
         "responses": {
           "200": {
             "description": "200 response",
@@ -57,6 +59,17 @@
         }
       },
       "post": {
+        "summary": "Add Reservation",
+        "description": "Add New Reservation",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -147,6 +160,8 @@
     },
     "/tables": {
       "get": {
+        "summary": "Get Tables API",
+        "description": "Get All Tables",
         "responses": {
           "200": {
             "description": "200 response",
@@ -195,6 +210,17 @@
         }
       },
       "post": {
+        "summary": "Add Table API",
+        "description": "Add New Table",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                  "$ref": "#/components/schemas/Table"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -285,6 +311,8 @@
     },
     "/signin": {
       "post": {
+        "summary": "Login User",
+        "description": "Log in added user",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -379,6 +407,8 @@
     },
     "/tables/{tableId}": {
       "get": {
+        "summary": "Get one table",
+        "description": "Get one table",
         "parameters": [
           {
             "name": "tableId",
@@ -489,6 +519,8 @@
     },
     "/signup": {
       "post": {
+        "summary": "Add User",
+        "description": "Add New User",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -642,6 +674,33 @@
             "nullable": true
           }
         }
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "tableNumber": {
+            "type": "integer"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slotTimeStart": {
+            "type": "string",
+            "pattern": "^([01]?[0-9]|2[0-3]):([0-5][0-9])$"
+          },
+          "slotTimeEnd": {
+            "type": "string",
+            "pattern": "^([01]?[0-9]|2[0-3]):([0-5][0-9])$"
+          }
+        },
+        "required": ["tableNumber", "clientName", "phoneNumber", "date", "slotTimeStart", "slotTimeEnd"]
       }
     },
     "securitySchemes": {
